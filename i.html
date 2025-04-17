@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Путь Гафиятуллина Самиуллы Гарифулловича</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css" />
+    <style>
+        :root {
+            --main-bg: #f5f5f5;
+            --main-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--main-bg);
+    }
+
+    #map {
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+    }
+
+    .leaflet-popup-content {
+        font-size: 14px;
+        color: var(--main-color);
+        line-height: 1.6;
+        max-width: 300px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .widget {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--card-bg);
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 24px;
+        color: var(--main-color);
+        font-weight: bold;
+        z-index: 1000;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .instruction {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        background: var(--card-bg);
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-size: 14px;
+        color: var(--main-color);
+        z-index: 1000;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 600px) {
+        .widget {
+            font-size: 18px;
+            padding: 10px 20px;
+            max-height: 80px;
+        }
+        .leaflet-popup-content {
+            font-size: 12px;
+            max-width: 200px;
+            max-height: 150px;
+        }
+        .instruction {
+            font-size: 12px;
+            max-width: 180px;
+            padding: 8px 12px;
+        }
+    }
+</style>
+
+</head>
+<body>
+    <div class="widget">Путь Гафиятуллина Самиуллы Гарифулловича</div>
+    <div id="map"></div>
+    <div class="instruction">
+        Наведите на маркеры, чтобы узнать историю пути. Красная линия — маршрут.
+    </div><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet-polyline-decorator@0.7.2/dist/leaflet.polylineDecorator.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof L === 'undefined') {
+            alert('Ошибка: Leaflet не загружен. Проверьте подключение к интернету.');
+            return;
+        }
+
+        const map = L.map('map', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView([54.0, 35.0], 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        const cities = [
+            { name: 'Самара', lat: 53.1959, lng: 50.1003, description: 'Родился прадедушка в 1909 году в селе Камышла Самарской области. В полтора года потерял маму. Семья была трудолюбивой, но их обвинили в кулачестве и прогнали в поселок "Кызыл арчык". Там они обзавелись хозяйством. "Все для фронта!" стало девизом. В 1941 году, в 31 год, прадед получил повестку.' },
+            { name: 'Казань', lat: 55.7963, lng: 49.1064, description: 'Поезд повез прадеда в Казань, где он прошел учебу в военном училище.' },
+            { name: 'Волгоград', lat: 48.7080, lng: 44.5133, description: 'Через два месяца прадед воевал в районе Сталинграда. Оттуда приходили письма, хранящиеся в архиве. Позже часть перебросили на Московский фронт, где он обучался в военном училище.' },
+            { name: 'Ленинград', lat: 59.9343, lng: 30.3351, description: 'Полк перебросили на Ленинградский фронт. Прадед служил на "Катюше", пробираясь по реке Ладога. Участвовал в освобождении Ленинграда. Многие погибли на переправе. Во время блокады был голод, крысы, тела на улицах. Солдаты очистили город и похоронили умерших.' },
+            { name: 'Берлин', lat: 52.5200, lng: 13.4050, description: 'Прадед оказался на "Белорусском фронте". В 1945 году дошел до Берлина, участвовал в его взятии на "Катюше". 9 мая 1945 года — победа! До декабря 1945 года он расчищал Берлин от мусора и трупов.' }
+        ];
+
+        const path = cities.map(city => [city.lat, city.lng]);
+
+        cities.forEach(city => {
+            const marker = L.marker([city.lat, city.lng]).addTo(map);
+            marker.bindPopup(city.description);
+            marker.on('mouseover', () => marker.openPopup());
+            marker.on('mouseout', () => marker.closePopup());
+        });
+
+        const polyline = L.polyline(path, { color: '#e74c3c', weight: 4 }).addTo(map);
+
+        L.polylineDecorator(polyline, {
+            patterns: [
+                {
+                    offset: '10%',
+                    repeat: '20%',
+                    symbol: L.Symbol.arrowHead({
+                        pixelSize: 10,
+                        pathOptions: { stroke: true, color: '#e74c3c', weight: 2 }
+                    })
+                }
+            ]
+        }).addTo(map);
+    });
+</script>
+
+</body>
+</html>
